@@ -5,28 +5,27 @@ const chalk = require('chalk');
 const morgan = require('morgan');
 const cron = require('node-cron');
 const serialize = require('serialize-javascript');
+const moment = require('moment');
+const dhtSensor = require("node-dht-sensor").promises;
+const W1Temp = require('w1temp');
 
 // SENSORS
-async function dummySensorOne() {
-  const dummyData = {
-    date: '22.11.2019',
-    time: '12:00',
-    value: 18.5,
+async function sensorOne() {
+  const { temperature } = await dhtSensor.read(22, 4);
+  return {
+    date: moment().format('DD.MM.YYYY'),
+    time: moment().format('HH:mm:ss'),
+    value: temperature.toFixed(1),
   };
-
-  await new Promise(resolve => setTimeout(() => resolve(), 500));
-  return dummyData
 };
 
-async function dummySensorTwo() {
-  const dummyData = {
-    date: '22.11.2019',
-    time: '12:00',
-    value: 16.3,
+async function sensorTwo() {
+  const sensor = await W1Temp.getSensor('28-000c98431859');
+  return {
+    date: moment().format('DD.MM.YYYY'),
+    time: moment().format('HH:mm:ss'),
+    value: sensor.getTemperature().toFixed(1),
   };
-
-  await new Promise(resolve => setTimeout(() => resolve(), 500));
-  return dummyData
 };
 // SENSORS END
 
@@ -60,9 +59,11 @@ function queryData(tableName) {
 };
 
 cron.schedule('* * * * *', async () => {
-  const dataOne = await dummySensorOne();
+  const dataOne = await sensorOne();
+  console.log(dataOne);
   await insertData('sensor_one', dataOne);
-  const dataTwo = await dummySensorTwo();
+  const dataTwo = await sensorTwo();
+  console.log(dataTwo);
   await insertData('sensor_two', dataTwo);
 });
 // DB END
@@ -85,10 +86,12 @@ app.get('/', async (req, res, next) => {
       </head>
       <body>
         <div id='root'></div>
-        <script>
-          window.__SENSOR_ONE_DATA__ = ${serialize(dataOne)}
-          window.__SENSOR_TWO_DATA__ = ${serialize(dataTwo)}
-        </script>
+        <div id='initialState'>
+          <script>
+            window.__SENSOR_ONE_DATA__ = ${serialize(dataOne)}
+            window.__SENSOR_TWO_DATA__ = ${serialize(dataTwo)}
+          </script>
+        </div>
         <script src='/dist/bundle.js'></script>
       </body>
     </html>
