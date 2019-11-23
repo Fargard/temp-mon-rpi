@@ -58,12 +58,10 @@ function queryData(tableName) {
   return client.query(queryData).then(res => res.rows).catch(e => console.log(e))
 };
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('* */30 * * *', async () => {
   const dataOne = await sensorOne();
-  console.log(dataOne);
   await insertData('sensor_one', dataOne);
   const dataTwo = await sensorTwo();
-  console.log(dataTwo);
   await insertData('sensor_two', dataTwo);
 });
 // DB END

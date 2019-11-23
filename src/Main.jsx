@@ -15,14 +15,13 @@ function getChartData(temperatures) {
 };
 
 function Main({ temperatures }) {
-  console.log(temperatures);
   const temp = {
     sensorOne: {
       currentTemp: temperatures.sensorOne[temperatures.sensorOne.length - 1] ? temperatures.sensorOne[temperatures.sensorOne.length - 1].temperature : 0,
       values: temperatures.sensorOne,
     },
     sensorTwo: {
-      currentTemp: temperatures.sensorTwo[temperatures.sensorTwo.length - 1] ? temperatures.sensorOne[temperatures.sensorTwo.length - 1].temperature : 0,
+      currentTemp: temperatures.sensorTwo[temperatures.sensorTwo.length - 1] ? temperatures.sensorTwo[temperatures.sensorTwo.length - 1].temperature : 0,
       values: temperatures.sensorTwo
     }
   };
