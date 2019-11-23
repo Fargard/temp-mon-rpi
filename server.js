@@ -14,7 +14,7 @@ async function sensorOne() {
   const { temperature } = await dhtSensor.read(22, 4);
   return {
     date: moment().format('DD.MM.YYYY'),
-    time: moment().format('HH:mm:ss'),
+    time: moment().format('HH:mm'),
     value: temperature.toFixed(1),
   };
 };
@@ -23,7 +23,7 @@ async function sensorTwo() {
   const sensor = await W1Temp.getSensor('28-000c98431859');
   return {
     date: moment().format('DD.MM.YYYY'),
-    time: moment().format('HH:mm:ss'),
+    time: moment().format('HH:mm'),
     value: sensor.getTemperature().toFixed(1),
   };
 };
@@ -58,7 +58,8 @@ function queryData(tableName) {
   return client.query(queryData).then(res => res.rows).catch(e => console.log(e))
 };
 
-cron.schedule('* */30 * * *', async () => {
+cron.schedule('0 */30 * * * *', async () => {
+  console.log('cron');
   const dataOne = await sensorOne();
   await insertData('sensor_one', dataOne);
   const dataTwo = await sensorTwo();

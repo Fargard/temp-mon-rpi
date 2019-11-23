@@ -6,7 +6,7 @@ import styled from 'styled-components';
 function getChartData(temperatures) {
   const result = temperatures.reduce((accum, item) => {
     accum.push([
-      moment(`${moment(item.date).format('DD.MM.YYYY')} ${item.time}`, 'DD.MM.YYYY HH:mm:ss'),
+      moment(`${moment(item.date).format('DD.MM.YYYY')} ${item.time}`, 'DD.MM.YYYY HH:mm'),
       parseFloat(item.temperature),
     ]);
     return accum;
