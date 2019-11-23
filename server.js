@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const serialize = require('serialize-javascript');
 const moment = require('moment');
 const dhtSensor = require("node-dht-sensor").promises;
-const W1Temp = require('w1temp');
+const ds18b20 = require('ds18b20-raspi')
 
 // SENSORS
 async function sensorOne() {
@@ -20,11 +20,11 @@ async function sensorOne() {
 };
 
 async function sensorTwo() {
-  const sensor = await W1Temp.getSensor('28-000c98431859');
+  const temp = await ds18b20.readSimpleC();
   return {
     date: moment().format('DD.MM.YYYY'),
     time: moment().format('HH:mm'),
-    value: sensor.getTemperature().toFixed(1),
+    value: temp.toFixed(1),
   };
 };
 // SENSORS END
@@ -58,8 +58,7 @@ function queryData(tableName) {
   return client.query(queryData).then(res => res.rows).catch(e => console.log(e))
 };
 
-cron.schedule('0 */30 * * * *', async () => {
-  console.log('cron');
+cron.schedule('*/30 * * * *', async () => {
   const dataOne = await sensorOne();
   await insertData('sensor_one', dataOne);
   const dataTwo = await sensorTwo();
@@ -76,6 +75,7 @@ app.use(morgan('dev'));
 app.get('/', async (req, res, next) => {
   const dataOne = await queryData('sensor_one');
   const dataTwo = await queryData('sensor_two');
+  console.log(dataOne, dataTwo);
   res.write(`
     <!DOCTYPE html>
     <html lang="en">
