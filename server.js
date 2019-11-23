@@ -75,7 +75,6 @@ app.use(morgan('dev'));
 app.get('/', async (req, res, next) => {
   const dataOne = await queryData('sensor_one');
   const dataTwo = await queryData('sensor_two');
-  console.log(dataOne, dataTwo);
   res.write(`
     <!DOCTYPE html>
     <html lang="en">
